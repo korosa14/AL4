@@ -4,13 +4,27 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() { 
+	//delete spriteBG_;//BG
+	
+}
 
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+	//ビュウープロジェクションの初期化
+	viewProjection_.Initialize();
+	//BG(2Dスプライト)
+	textureHandle_ = TextureManager::Load("mario.jpg");
+	//3Dモデルの生産
+	model_.reset(Model::Create());
+	//自キャラの生産
+	player_ = std::make_unique<Player>();
+	//自キャラの初期化
+	player_->Initialize(model_.get(), textureHandle_);
 }
 
 void GameScene::Update() {}
@@ -24,6 +38,9 @@ void GameScene::Draw() {
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(commandList);
 
+	//背景
+	/*spriteBG_->Draw();*/
+
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
@@ -35,12 +52,17 @@ void GameScene::Draw() {
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
+	
+
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	// 自キャラの描画
+	player_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

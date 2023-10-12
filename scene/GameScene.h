@@ -8,6 +8,9 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include"Player.h"
+
+#include<memory>
 
 /// <summary>
 /// ゲームシーン
@@ -19,7 +22,7 @@ public: // メンバ関数
 	/// コンストクラタ
 	/// </summary>
 	GameScene();
-
+	
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
@@ -45,7 +48,21 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
+	//BG(スプライト)
+	uint32_t textureHandleBG_ = 0;
+	Sprite* spriteBG_ = nullptr;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	/// 
+	
+	//ビュウープロジェクション
+	ViewProjection viewProjection_;
+	//テクスチャハンドル
+	uint32_t textureHandle_ = 0u;
+	//モデルデータ
+	std::unique_ptr<Model> model_;
+	//自キャラ
+	std::unique_ptr<Player> player_;
 };
