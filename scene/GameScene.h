@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Audio.h"
 #include "DirectXCommon.h"
@@ -9,6 +9,8 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include"Player.h"
+#include"Ground.h"
+#include"Skydome.h"
 
 #include<memory>
 
@@ -62,7 +64,15 @@ private: // メンバ変数
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 	//モデルデータ
-	std::unique_ptr<Model> model_;
-	//自キャラ
+	std::unique_ptr<Model> modelFighter_;
+	//3Dモデル
+	std::unique_ptr<Model> modelSkydome_;
+	//3Dモデル
+	std::unique_ptr<Model> modelGround_;
+
+
+	//クラス
 	std::unique_ptr<Player> player_;
+	std::unique_ptr<Ground> ground_;
+	std::unique_ptr<Skydome> skydome_;
 };

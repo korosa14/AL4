@@ -1,18 +1,20 @@
 ﻿#pragma once
+
 #include"Model.h"
 #include"WorldTransform.h"
 
-//地面
-class Ground {
+//スカイドーム
+//<summary>
+class Skydome {
 public:
 	//初期化
-	void Initialize(Model* model);
-
+	void Initialize(Model*model);
+	
 	//更新
 	void Update();
 
 	//描画
-	void Draw(const ViewProjection&viewProjection);
+	void Drow(const ViewProjection& viewProjection);
 
 private:
 	//ワールド変換データ
@@ -21,5 +23,5 @@ private:
 	Model* model_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
-};
 
+};
