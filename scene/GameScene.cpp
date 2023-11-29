@@ -1,6 +1,7 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include"AxisIndicator.h"
 
 GameScene::GameScene() {}
 
@@ -33,12 +34,49 @@ void GameScene::Initialize() {
 	player_->Initialize(modelFighter_.get());
 	ground_->Initialize(modelGround_.get());
 	skydome_->Initialize(modelSkydome_.get());
+
+	//デバックカメラ
+	debugCamera_ = std::make_unique<DebugCamera>(WinApp::kWindowWidth, WinApp::kWindowHeight);
+	debugCamera_->SetFarZ(2000.0f);
+
+	//追従カメラ
+	followCamera_ = std::make_unique<FollowCamera>();
+	followCamera_->Initialize();
+
+	player_->SetViewProjection(&followCamera_->GetViewProJection());
+	//自キャラのワールドトランスフォーマーを追従カメラにセット
+	followCamera_->SetTarget(&player_->GetWorldTransform());
+
+	//軸方向表示の表示を有効にする
+	AxisIndicator::GetInstance()->SetVisible(true);
+	//軸方向表示を参照するビュープロジェクションを指定する
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
+	
 }
 
 void GameScene::Update() { 
-	skydome_->Update();
+	/*skydome_->Update();
 	player_->Update();
-	ground_->Update();
+	ground_->Update();*/
+
+	//デバックカメラの更新
+	if (input_->TriggerKey(DIK_0)) {
+		//フラグをトグル
+		isDebugCameraActive_ = !isDebugCameraActive_;
+	}
+	if (isDebugCameraActive_ == true) {
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+	} else {
+		followCamera_->Update();
+		viewProjection_.matView = followCamera_->GetViewProJection().matView;
+		viewProjection_.matProjection = followCamera_->GetViewProJection().matProjection;
+	}
+	//ビュウープロジェクションの転送
+	viewProjection_.TransferMatrix();
+
+	player_->Update();
 }
 
 void GameScene::Draw() {
@@ -58,19 +96,16 @@ void GameScene::Draw() {
 	/// </summary>
 
 	
-	
-
-	// 3Dオブジェクト描画前処理
-	Model::PreDraw(commandList);
-	
+	// スプライト描画後処理
+	Sprite::PostDraw();
 	// 深度バッファクリア
-	//dxCommon_->ClearDepthBuffer();
+	dxCommon_->ClearDepthBuffer();
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
 	
-	// スプライト描画後処理
-	Sprite::PostDraw();
+	// 3Dオブジェクト描画前処理
+	Model::PreDraw(commandList);
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる

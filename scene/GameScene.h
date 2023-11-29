@@ -11,6 +11,8 @@
 #include"Player.h"
 #include"Ground.h"
 #include"Skydome.h"
+#include"DebugCamera.h"
+#include"FollowCamera.h"
 
 #include<memory>
 
@@ -50,29 +52,33 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
-	//BG(スプライト)
-	uint32_t textureHandleBG_ = 0;
-	Sprite* spriteBG_ = nullptr;
+	////BG(スプライト)
+	//uint32_t textureHandleBG_ = 0;
+	//Sprite* spriteBG_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	/// 
-	
 	//ビュウープロジェクション
 	ViewProjection viewProjection_;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 	//モデルデータ
 	std::unique_ptr<Model> modelFighter_;
-	//3Dモデル
 	std::unique_ptr<Model> modelSkydome_;
-	//3Dモデル
 	std::unique_ptr<Model> modelGround_;
 
-
-	//クラス
+	// 自キャラ
 	std::unique_ptr<Player> player_;
+	//地面
 	std::unique_ptr<Ground> ground_;
+	//天球
 	std::unique_ptr<Skydome> skydome_;
+	//デバックカメラ
+	std::unique_ptr<DebugCamera> debugCamera_;
+	//デバックカメラ有効
+	bool isDebugCameraActive_ = false;
+	//追従カメラ
+	std::unique_ptr<FollowCamera> followCamera_;
+
 };
