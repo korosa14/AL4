@@ -1,16 +1,16 @@
-#pragma once
+ï»¿#pragma once
 
 #include "ViewProjection.h"
 #include"WorldTransform.h"
 
-//’Ç]ƒJƒƒ‰
+//è¿½å¾“ã‚«ãƒ¡ãƒ©
 class FollowCamera {
 public:
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	void Initialize();
 
-	//XV
+	//æ›´æ–°
 	void Update();
 
 	void SetTarget(const WorldTransform* target) { target_ = target; }
@@ -18,9 +18,9 @@ public:
 	const ViewProjection& GetViewProJection() { return viewProjection_; }
 
 private:
-	//ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“
+	//ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³
 	ViewProjection viewProjection_;
-	//’Ç]‘ÎÛ
+	//è¿½å¾“å¯¾è±¡
 	const WorldTransform* target_ = nullptr;
 
 };

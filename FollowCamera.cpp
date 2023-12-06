@@ -1,4 +1,4 @@
-#include "FollowCamera.h"
+ï»¿#include "FollowCamera.h"
 #include"MathUtilityForText.h"
 #include"Input.h"
 
@@ -12,23 +12,23 @@ void FollowCamera::Update() {
 	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
 		viewProjection_.rotation_.y += 0.03f;
 	}
-	//’Ç]‘ÎÛ‚ª‚¢‚ê‚Î
+	//è¿½å¾“å¯¾è±¡ãŒã„ã‚Œã°
 	if (target_) {
-		//’Ç]‘ÎÛ‚©‚çƒJƒƒ‰‚Ü‚Å‚ÌƒIƒtƒZƒbƒg
+		//è¿½å¾“å¯¾è±¡ã‹ã‚‰ã‚«ãƒ¡ãƒ©ã¾ã§ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 		Vector3 offset = {0.0f, 2.0f, -10.0f};
 
 		Matrix4x4 matRotX = MakeRotateXMatrix(viewProjection_.rotation_.x);
 		Matrix4x4 matRotY = MakeRotateYMatrix(viewProjection_.rotation_.y);
 		Matrix4x4 matRotZ = MakeRotateZMatrix(viewProjection_.rotation_.z);
-		//‰ñ“]s—ñ‚Ì‡¬
+		//å›è»¢è¡Œåˆ—ã®åˆæˆ
 		Matrix4x4 matRot = matRotZ * matRotX * matRotY;
 
-		//ƒIƒtƒZƒbƒg‚ğƒJƒƒ‰‚Ì‰ñ“]‚É‡‚í‚¹‚Ä‰ñ“]‚³‚¹‚é
+		//ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’ã‚«ãƒ¡ãƒ©ã®å›è»¢ã«åˆã‚ã›ã¦å›è»¢ã•ã›ã‚‹
 		offset = TransformNormal(offset, matRot);
-		//À•W‚ğƒRƒs[‚µ‚ÄƒIƒtƒZƒbƒg•ª‚©‚ç‚¸
+		//åº§æ¨™ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ã‚ªãƒ•ã‚»ãƒƒãƒˆåˆ†ã‹ã‚‰ãš
 		viewProjection_.translation_ = target_->translation_ + offset;
 
 	}
-	//ƒrƒ…[s—ñ‚ÌXV
+	//ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã®æ›´æ–°
 	viewProjection_.UpdateMatrix();
 }

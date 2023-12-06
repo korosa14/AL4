@@ -2,7 +2,7 @@
 #include"ImGuiManager.h"
 //#include"Vector3.h"
 #include<cassert>
-#include"input/Input.h"
+#include"Input.h"
 #include"MathUtilityForText.h"
 
 //初期化
