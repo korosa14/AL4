@@ -26,15 +26,18 @@ void GameScene::Initialize() {
 	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
 	modelGround_.reset(Model::CreateFromOBJ("ground", true));
 	modelFighter_.reset(Model::CreateFromOBJ("float", true));
-	//クラスの生産
-	player_ = std::make_unique<Player>();
-	ground_ = std::make_unique<Ground>();
-	skydome_ = std::make_unique<Skydome>();
-	//クラスの初期化
-	player_->Initialize(modelFighter_.get());
-	ground_->Initialize(modelGround_.get());
-	skydome_->Initialize(modelSkydome_.get());
+	//クラスの生産&初期化
 
+	//自機
+	player_ = std::make_unique<Player>();
+	player_->Initialize(modelFighter_.get());
+	//地面
+	ground_ = std::make_unique<Ground>();
+	ground_->Initialize(modelGround_.get());
+	//スカイドーム
+	skydome_ = std::make_unique<Skydome>();
+	skydome_->Initialize(modelSkydome_.get());
+	
 	//デバックカメラ
 	debugCamera_ = std::make_unique<DebugCamera>(WinApp::kWindowWidth, WinApp::kWindowHeight);
 	debugCamera_->SetFarZ(2000.0f);
@@ -90,12 +93,9 @@ void GameScene::Draw() {
 
 	//背景
 	/*spriteBG_->Draw();*/
-
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-
-	
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア

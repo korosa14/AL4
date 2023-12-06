@@ -1,6 +1,6 @@
 #include "FollowCamera.h"
 #include"MathUtilityForText.h"
-#include"input/Input.h"
+#include"Input.h"
 
 void FollowCamera::Initialize() { 
 	viewProjection_.farZ = 2000.0f; 

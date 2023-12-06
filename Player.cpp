@@ -25,7 +25,7 @@ void Player::Update() {
 
 	const float speed = 0.3f;
 	Vector3 move = {0.0f, 0.0f, 0.0f};
-	if (input_->PushKey(DIK_RIGHT)) {
+	if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
 		move.x = 1.0f;
 	}
 	if (Input::GetInstance()->PushKey(DIK_LEFT)) {
@@ -43,8 +43,8 @@ void Player::Update() {
 	if (viewProjection_) {
 		//カメラの回転行列
 		Matrix4x4 matRotX = MakeRotateXMatrix(viewProjection_->rotation_.x);
-		Matrix4x4 matRotY = MakeRotateXMatrix(viewProjection_->rotation_.y);
-		Matrix4x4 matRotZ = MakeRotateXMatrix(viewProjection_->rotation_.z);
+		Matrix4x4 matRotY = MakeRotateYMatrix(viewProjection_->rotation_.y);
+		Matrix4x4 matRotZ = MakeRotateZMatrix(viewProjection_->rotation_.z);
 		//回転行列の合成
 		Matrix4x4 matRot = matRotZ * matRotX * matRotY;
 		//移動量をカメラの回転に合わせて回転させる
@@ -68,5 +68,6 @@ void Player::Update() {
 //描画
 void Player::Draw(const ViewProjection& viewProjection) {
 	//3Dモデルを描画
-	model_->Draw(worldTransform_, viewProjection,textureHandle_);
+	model_->Draw(worldTransform_, viewProjection);
+	                                           // textureHandle_
 }
