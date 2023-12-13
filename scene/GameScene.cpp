@@ -12,55 +12,68 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
+	// クラスの生産&初期化
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	//ビュウープロジェクションの初期化
+	//ビュープロジェクションの初期化
 	viewProjection_.farZ = 2000.0f;
 	viewProjection_.translation_ = {0.0f, 2.0f, -10.0f};
 	viewProjection_.Initialize();
-	//BG(2Dスプライト)
-	textureHandle_ = TextureManager::Load("mario.jpg");
-	//3Dモデルの生産
-	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
-	modelGround_.reset(Model::CreateFromOBJ("ground", true));
-	modelFighter_.reset(Model::CreateFromOBJ("float", true));
-	//クラスの生産&初期化
 
-	//自機
-	player_ = std::make_unique<Player>();
-	player_->Initialize(modelFighter_.get());
-	//地面
-	ground_ = std::make_unique<Ground>();
-	ground_->Initialize(modelGround_.get());
-	//スカイドーム
-	skydome_ = std::make_unique<Skydome>();
-	skydome_->Initialize(modelSkydome_.get());
-	
-	//デバックカメラ
+	// デバックカメラ
 	debugCamera_ = std::make_unique<DebugCamera>(WinApp::kWindowWidth, WinApp::kWindowHeight);
 	debugCamera_->SetFarZ(2000.0f);
 
-	//追従カメラ
+	// 追従カメラ
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
 
+	// 軸方向表示の表示を有効にする
+	AxisIndicator::GetInstance()->SetVisible(true);
+	// 軸方向表示を参照するビュープロジェクションを指定する
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+
+	
+	//3Dモデルの生産
+	modelCube_.reset(Model::Create());
+	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
+	modelGround_.reset(Model::CreateFromOBJ("ground", true));
+	modelFighterBody_.reset(Model::CreateFromOBJ("float_Body", true));
+	modelFighterHead_.reset(Model::CreateFromOBJ("float_Head", true));
+	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
+	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
+
+
+	
+	
+	//地面
+	ground_ = std::make_unique<Ground>();
+	ground_->Initialize(modelGround_.get());
+	//天球
+	skydome_ = std::make_unique<Skydome>();
+	skydome_->Initialize(modelSkydome_.get());
+	
+	// 自機
+	player_ = std::make_unique<Player>();
+	//自キャラの初期化
+	player_->Initialize(
+	    modelFighterBody_.get(), modelFighterHead_.get(), modelFighterL_arm_.get(),
+	    modelFighterR_arm_.get());
 	player_->SetViewProjection(&followCamera_->GetViewProJection());
 	//自キャラのワールドトランスフォーマーを追従カメラにセット
 	followCamera_->SetTarget(&player_->GetWorldTransform());
 
-	//軸方向表示の表示を有効にする
-	AxisIndicator::GetInstance()->SetVisible(true);
-	//軸方向表示を参照するビュープロジェクションを指定する
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
-	
 }
 
 void GameScene::Update() { 
 	/*skydome_->Update();
 	player_->Update();
 	ground_->Update();*/
+
+	//追従カメラの更新
+	followCamera_->Update();
 
 	//デバックカメラの更新
 	if (input_->TriggerKey(DIK_0)) {
@@ -72,13 +85,17 @@ void GameScene::Update() {
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 	} else {
-		followCamera_->Update();
 		viewProjection_.matView = followCamera_->GetViewProJection().matView;
 		viewProjection_.matProjection = followCamera_->GetViewProJection().matProjection;
 	}
 	//ビュウープロジェクションの転送
 	viewProjection_.TransferMatrix();
 
+	//天球
+	skydome_->Update();
+	//地面
+	ground_->Update();
+	//自キャラ
 	player_->Update();
 }
 
