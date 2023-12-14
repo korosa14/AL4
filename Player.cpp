@@ -38,7 +38,7 @@ void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, M
 
 	worldTransformR_arm_.Initialize();
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
-	worldTransformR_arm_.translation_.x = -0.5275f;
+	worldTransformR_arm_.translation_.x = +0.5275f;
 	worldTransformR_arm_.translation_.y = 1.2619f;
 
 	//浮遊ギミックの初期化
@@ -50,25 +50,35 @@ void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, M
 // 更新
 void Player::Update() { 
 
-	XINPUT_STATE joyState;
+	
 
 	//浮遊ギミックの更新
 	UpdateFloatingGimmick();
 
-	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-
+	
 		const float speed = 0.3f;
-		const float threshold = 0.5f;
-		bool isMoving = false;
 
 		//移動量
 		Vector3 move = {
-		    (float)joyState.Gamepad.sThumbLX / SHRT_MAX, 0.0f,
-		    (float)joyState.Gamepad.sThumbLY / SHRT_MAX};
-		if (Length(move) > threshold) {
-			isMoving = true;
+		   0.0f,0.0f,0.0f,
+		};
+	
+		if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
+		move.x = 1.0f;
 		}
+		if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+		move.x = -1.0f;
+		}
+		if (Input::GetInstance()->PushKey(DIK_UP)) {
+		move.z = 1.0f;
+		}
+		if (Input::GetInstance()->PushKey(DIK_DOWN)) {
+		move.z = -1.0f;
+		}
+	
 		move = Normalize(move) * speed;
+
+
 
 		if (viewProjection_) {
 			// カメラの回転行列
@@ -86,15 +96,23 @@ void Player::Update() {
 		// 移動ベクトルのY軸周り角度
 		worldTransformBase_.rotation_.y = std::atan2(move.x, move.z);
 
-
-	}
+	
 
 	//行列を更新
-	/*worldTransformBase_.UpdateMatrix();
+	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
-	worldTransformR_arm_.UpdateMatrix();*/
+	worldTransformR_arm_.UpdateMatrix();
+
+	
+	//変換行列を更新
+	worldTransformBase_.matWorld_ = MakeAffineMatrix(
+	    worldTransformBase_.scale_, worldTransformBase_.rotation_,
+	    worldTransformBase_.translation_);
+	//変換行列を定数バッファに転送
+	worldTransformBase_.TransferMatrix();
+
 
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3(
@@ -110,28 +128,6 @@ void Player::Update() {
 	ImGui::SliderFloat("floatingAmplitude", &floatingAmplitude_, 0.0f, 10.0f);
 	ImGui::SliderFloat("idleArmAngleMax_", &idleArmAngleMax_, 0.0f, 180.0f);
 	ImGui::End();
-
-	const float speed = 0.3f;
-	Vector3 move = {0.0f, 0.0f, 0.0f};
-	if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
-		move.x = 1.0f;
-	}
-	if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-		move.x = -1.0f;
-	}
-	if (Input::GetInstance()->PushKey(DIK_UP)) {
-		move.z = 1.0f;
-	}
-	if (Input::GetInstance()->PushKey(DIK_DOWN)) {
-		move.z = -1.0f;
-	}
-	
-	//変換行列を更新
-	worldTransformBase_.matWorld_ = MakeAffineMatrix(
-	    worldTransformBase_.scale_, worldTransformBase_.rotation_,
-	    worldTransformBase_.translation_);
-	//変換行列を定数バッファに転送
-	worldTransformBase_.TransferMatrix();
 
 }
 

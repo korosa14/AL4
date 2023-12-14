@@ -36,13 +36,13 @@ private:
 	WorldTransform worldTransformR_arm_;
 	//浮遊ギミックの媒介変数
 	float floatingParameter_ = 0.0f;
+	//浮遊ギミックサイクル
+	int32_t floatingCycle_ = 90;
 	//モデル
 	Model* modelBody_ = nullptr;
 	Model* modelHead_ = nullptr;
 	Model* modelL_arm_ = nullptr;
 	Model* modelR_arm_ = nullptr;
-	////テクスチャハンドル
-	//uint32_t textureHandle_ = 0u;
 	//インプット
 	Input* input_ = nullptr;
 	//カメラのビュープロジェクション
