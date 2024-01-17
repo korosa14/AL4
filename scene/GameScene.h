@@ -1,7 +1,10 @@
 ﻿#pragma once
 
 #include "Audio.h"
+#include "DebugCamera.h"
 #include "DirectXCommon.h"
+#include "Enemy.h"
+#include "FollowCamera.h"
 #include "Input.h"
 #include "Model.h"
 #include "SafeDelete.h"
@@ -73,8 +76,13 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelFighterHead_;
 	std::unique_ptr<Model> modelFighterL_arm_;
 	std::unique_ptr<Model> modelFighterR_arm_;
+	std::unique_ptr<Model> modelEnemyBody_;
+	std::unique_ptr<Model> modelEnemyL_arm_;
+	std::unique_ptr<Model> modelEnemyR_arm_;
 	// 自キャラ
 	std::unique_ptr<Player> player_;
+	//敵キャラ
+	std::unique_ptr<Enemy> enemy_;
 	//地面
 	std::unique_ptr<Ground> ground_;
 	//天球

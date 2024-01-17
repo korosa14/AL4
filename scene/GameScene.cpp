@@ -2,12 +2,12 @@
 #include "TextureManager.h"
 #include <cassert>
 #include"AxisIndicator.h"
+#include"MathUtilityForText.h"
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
 	//delete spriteBG_;//BG
-	
 }
 
 void GameScene::Initialize() {
@@ -44,7 +44,9 @@ void GameScene::Initialize() {
 	modelFighterHead_.reset(Model::CreateFromOBJ("float_Head", true));
 	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
-
+	modelEnemyBody_.reset(Model::CreateFromOBJ("needle_Body", true));
+	modelEnemyL_arm_.reset(Model::CreateFromOBJ("needle_L_arm", true));
+	modelEnemyR_arm_.reset(Model::CreateFromOBJ("needle_R_arm", true));
 
 	
 	
@@ -55,16 +57,28 @@ void GameScene::Initialize() {
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize(modelSkydome_.get());
 	
+	//自キャラ
+	std::vector<Model*> playerModels = {
+	    modelFighterBody_.get(), modelFighterHead_.get(), modelEnemyL_arm_.get(),
+	    modelEnemyR_arm_.get()};
 	// 自機
 	player_ = std::make_unique<Player>();
 	//自キャラの初期化
-	player_->Initialize(
-	    modelFighterBody_.get(), modelFighterHead_.get(), modelFighterL_arm_.get(),
-	    modelFighterR_arm_.get());
+	player_->Initialize(playerModels);
 	player_->SetViewProjection(&followCamera_->GetViewProJection());
 	//自キャラのワールドトランスフォーマーを追従カメラにセット
 	followCamera_->SetTarget(&player_->GetWorldTransform());
 
+	//敵モデル
+	std::vector<Model*> enemyModels = {
+	    modelEnemyBody_.get(), modelEnemyL_arm_.get(), modelEnemyR_arm_.get()
+	};
+	//敵の生産
+	enemy_ = std::make_unique<Enemy>();
+	//敵の初期化
+	enemy_->Initialize(enemyModels);
+	enemy_->SetLocalPosition(Vector3(10, 0, 20));
+	enemy_->SetLocalRotation(Vector3(0, PI, 0));
 }
 
 void GameScene::Update() { 
@@ -97,6 +111,8 @@ void GameScene::Update() {
 	ground_->Update();
 	//自キャラ
 	player_->Update();
+	//敵
+	enemy_->Update();
 }
 
 void GameScene::Draw() {
@@ -132,6 +148,7 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 	ground_->Draw(viewProjection_);
 	skydome_->Drow(viewProjection_);
+	enemy_->Draw(viewProjection_);
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion

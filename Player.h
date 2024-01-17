@@ -4,15 +4,24 @@
 #include"ViewProjection.h"
 #include"WorldTransform.h"
 #include"Input.h"
+#include"BaseCharacter.h"
 
-class Player {
+
+//自キャラ
+class Player :public BaseCharacter {
 public:
+	enum {
+		kModelIndexBody,
+		kModelIndexHead, 
+		kModelIndexL_arm, 
+		kModelIndexR_arm,
+	};
 	//初期化
-	void Initialize(Model*modelBody,Model*modelHead,Model*modelL_arm,Model*modelR_arm);
+	void Initialize(const std::vector<Model*>&models)override;
 	//更新
-	void Update();
+	void Update()override;
 	//描画
-	void Draw(const ViewProjection& viewProjection);
+	void Draw(const ViewProjection& viewProjection)override;
 
 	//ワールド変換データを取得
 	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
@@ -28,6 +37,7 @@ private:
 	float floatingAmplitude_ = 0.2f;
 	//待機モーションの腕角度最大値
 	float idleArmAngleMax_ = 30.0f;
+
 	//ワールド変換データ
 	WorldTransform worldTransformBase_;
 	WorldTransform worldTransformBody_;

@@ -1,25 +1,14 @@
 ﻿#include "Player.h"
 #include"ImGuiManager.h"
-//#include"Vector3.h"
 #include<cassert>
 #include"Input.h"
 #include"MathUtilityForText.h"
 #include"Vector3.h"
 
 //初期化
-void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, Model* modelR_arm) {
-	//NULLポインタチェック
-	assert(modelBody);
-	assert(modelHead);
-	assert(modelL_arm);
-	assert(modelR_arm);
-
-	//メンバ変数に受け取った値を代入
-	//textureHandle_ = textureHandle;
-	modelBody_ = modelBody;
-	modelHead_ = modelHead;
-	modelL_arm_ = modelL_arm;
-	modelR_arm_ = modelR_arm;
+void Player::Initialize(const std::vector<Model*>& models) {
+	//基底クラスの初期化
+	BaseCharacter::Initialize(models);
 	
 	//ワールド変換の初期化
 	worldTransformBase_.Initialize();
@@ -45,19 +34,18 @@ void Player::Initialize(Model* modelBody, Model* modelHead, Model* modelL_arm, M
 	InitializeFloatingGimmick();
 
 	//インプット
-	input_ = Input::GetInstance();
+	//input_ = Input::GetInstance();
 }
+
 // 更新
 void Player::Update() { 
 
-	
 
 	//浮遊ギミックの更新
 	UpdateFloatingGimmick();
 
-	
 		const float speed = 0.3f;
-
+		
 		//移動量
 		Vector3 move = {
 		   0.0f,0.0f,0.0f,
@@ -134,10 +122,10 @@ void Player::Update() {
 //描画
 void Player::Draw(const ViewProjection& viewProjection) {
 	//3Dモデルを描画
-	modelBody_->Draw(worldTransformBody_, viewProjection);
-	modelHead_->Draw(worldTransformHead_, viewProjection);
-	modelL_arm_->Draw(worldTransformL_arm_, viewProjection);
-	modelR_arm_->Draw(worldTransformR_arm_, viewProjection);
+	models_[kModelIndexBody]->Draw(worldTransformBody_, viewProjection);
+	models_[kModelIndexHead]->Draw(worldTransformHead_, viewProjection);
+	models_[kModelIndexL_arm]->Draw(worldTransformL_arm_, viewProjection);
+	models_[kModelIndexR_arm]->Draw(worldTransformR_arm_, viewProjection);
 }
 
 void Player::InitializeFloatingGimmick() { floatingParameter_ = 0.0f; }
