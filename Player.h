@@ -23,6 +23,7 @@ public:
 	enum class Behavior {
 		kRoot,//通常状態
 		kAttack,//攻撃中
+		kJump,//ジャンプ
 	};
 
 	//初期化
@@ -33,7 +34,7 @@ public:
 	void Draw(const ViewProjection& viewProjection)override;
 
 	//ワールド変換データを取得
-	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 	void SetViewProjection(const ViewProjection* viewProjection) {
 		viewProjection_ = viewProjection;
@@ -54,7 +55,7 @@ private:
 
 
 	//ワールド変換データ
-	WorldTransform worldTransformBase_;
+	
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformL_arm_;
@@ -76,6 +77,9 @@ private:
 	Behavior behavior_ = Behavior::kRoot;
 	//行動リクエスト
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
+
+	//速度
+	Vector3 velocity_;
 
 	//モデル
 	Model* modelBody_ = nullptr;
@@ -103,6 +107,12 @@ private:
 
 	//攻撃行動更新
 	void BehaviorAttackUpdate();
+
+	//ジャンプ行動初期化
+	void BehaviorJumpInitialize();
+
+	//ジャンプ行動更新
+	void BehaviorJumpUpdate();
 
 	//近接武器描画
 	void DrawMeleeWeapon(const ViewProjection& viewProjection);

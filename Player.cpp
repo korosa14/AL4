@@ -11,10 +11,10 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	BaseCharacter::Initialize(models);
 	
 	//ワールド変換の初期化
-	worldTransformBase_.Initialize();
+	worldTransform_.Initialize();
 
 	worldTransformBody_.Initialize();
-	worldTransformBody_.parent_ = &worldTransformBase_;
+	worldTransformBody_.parent_ = &worldTransform_;
 
 	worldTransformHead_.Initialize();
 	worldTransformHead_.parent_ = &worldTransformBody_;
@@ -31,7 +31,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformR_arm_.translation_.y = 1.2619f;
 
 	worldTransformHammer_.Initialize();
-	worldTransformHammer_.parent_ = &worldTransformBase_;
+	worldTransformHammer_.parent_ = &worldTransform_;
 	worldTransformHammer_.translation_.y = 1.2619f;
 
 
@@ -59,6 +59,9 @@ void Player::Update() {
 		case Behavior::kAttack:
 			BehaviorAttackInitialize();
 			break;
+		case Behavior::kJump:
+			BehaviorJumpInitialize();
+			break;
 		}
 		//行動リクエストをリセット
 		behaviorRequest_ = std::nullopt;
@@ -74,6 +77,10 @@ void Player::Update() {
 	case Behavior::kAttack:
 		BehaviorAttackUpdate();
 		break;
+		//ジャンプ行動
+	case Behavior::kJump:
+		BehaviorJumpUpdate();
+		break;
 	}
 
 	//浮遊ギミックの更新
@@ -82,7 +89,7 @@ void Player::Update() {
 	
 
 	//行列を更新
-	worldTransformBase_.UpdateMatrix();
+	worldTransform_.UpdateMatrix();
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
@@ -91,11 +98,11 @@ void Player::Update() {
 
 	
 	//変換行列を更新
-	worldTransformBase_.matWorld_ = MakeAffineMatrix(
-	    worldTransformBase_.scale_, worldTransformBase_.rotation_,
-	    worldTransformBase_.translation_);
+	worldTransform_.matWorld_ = MakeAffineMatrix(
+	    worldTransform_.scale_, worldTransform_.rotation_,
+	    worldTransform_.translation_);
 	//変換行列を定数バッファに転送
-	worldTransformBase_.TransferMatrix();
+	worldTransform_.TransferMatrix();
 
 
 	ImGui::Begin("Player");
@@ -193,27 +200,29 @@ void Player::BehaviorRootUpdate() {
 
 	const float speed = 0.3f;
 
+	velocity_ = {};
+
 	// 移動量
-	Vector3 move = {
+	/*Vector3 move = {
 	    0.0f,
 	    0.0f,
 	    0.0f,
-	};
+	};*/
 
 	if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
-		    move.x = 1.0f;
+		    velocity_.x = 1.0f;
 	}
 	if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-		    move.x = -1.0f;
+		    velocity_.x = -1.0f;
 	}
 	if (Input::GetInstance()->PushKey(DIK_UP)) {
-		    move.z = 1.0f;
+		    velocity_.z = 1.0f;
 	}
 	if (Input::GetInstance()->PushKey(DIK_DOWN)) {
-		    move.z = -1.0f;
+		    velocity_.z = -1.0f;
 	}
 
-	move = Normalize(move) * speed;
+	velocity_ = Normalize(velocity_) * speed;
 	
 	if (viewProjection_) {
 		    // カメラの回転行列
@@ -223,20 +232,25 @@ void Player::BehaviorRootUpdate() {
 		    // 回転行列の合成
 		    Matrix4x4 matRot = matRotZ * matRotX * matRotY;
 		    // 移動量をカメラの回転に合わせて回転させる
-		    move = TransformNormal(move, matRot);
+		    velocity_ = TransformNormal(velocity_, matRot);
 	}
 	// 移動
-	worldTransformBase_.translation_ += move;
+	worldTransform_.translation_ += velocity_;
 
 	// 移動ベクトルのY軸周り角度
-	worldTransformBase_.rotation_.y = std::atan2(move.x, move.z);
+	worldTransform_.rotation_.y = std::atan2(velocity_.x,velocity_.z);
 
 	if (Input::GetInstance()->PushKey(DIK_A)) {
 		   
 		// 攻撃リクエスト
 		    behaviorRequest_ = Behavior::kAttack;
 	}
-	
+	//ジャンプボタンを押したら
+	else if (Input::GetInstance()->PushKey(DIK_S)) {
+
+		//ジャンプリクエスト
+		    behaviorRequest_ = Behavior::kJump;
+	}
 }
 
 void Player::BehaviorAttackInitialize() { 
@@ -276,6 +290,36 @@ void Player::BehaviorAttackUpdate() {
 	//規定の時間経過で通常行動に戻る
 	if (++attackParameter_ >= behaviorAttackTime) {
 		    behaviorRequest_ = Behavior::kRoot;
+	}
+}
+
+void Player::BehaviorJumpInitialize() {
+
+	worldTransformBody_.translation_.y = 0;
+	worldTransformL_arm_.rotation_.x = 0;
+	worldTransformR_arm_.rotation_.x = 0;
+
+	//ジャンプ初速
+	const float kJumpFirstSpeed = 1.0f;
+	//ジャンプ初速を与える
+	velocity_.y = kJumpFirstSpeed;
+}
+
+void Player::BehaviorJumpUpdate() {
+	//移動
+	worldTransform_.translation_ += velocity_;
+	//重力加速度
+	const float kGravityAcceleration = 0.05f;
+	//加速度ベクトル
+	Vector3 accelerationVector = {0, -kGravityAcceleration, 0};
+	//加速する
+	velocity_ += accelerationVector;
+
+	//着地
+	if (worldTransform_.translation_.y <= 0.0f) {
+		worldTransform_.translation_.y = 0;
+		//ジャンプ終了
+		behaviorRequest_ = Behavior::kRoot;
 	}
 }
 
