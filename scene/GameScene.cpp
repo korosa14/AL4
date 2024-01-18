@@ -50,7 +50,6 @@ void GameScene::Initialize() {
 	modelEnemyR_arm_.reset(Model::CreateFromOBJ("needle_R_arm", true));
 
 	
-	
 	//地面
 	ground_ = std::make_unique<Ground>();
 	ground_->Initialize(modelGround_.get());
