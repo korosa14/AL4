@@ -44,6 +44,7 @@ void GameScene::Initialize() {
 	modelFighterHead_.reset(Model::CreateFromOBJ("float_Head", true));
 	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
+	modelHammer_.reset(Model::CreateFromOBJ("hammer"));
 	modelEnemyBody_.reset(Model::CreateFromOBJ("needle_Body", true));
 	modelEnemyL_arm_.reset(Model::CreateFromOBJ("needle_L_arm", true));
 	modelEnemyR_arm_.reset(Model::CreateFromOBJ("needle_R_arm", true));
@@ -59,8 +60,8 @@ void GameScene::Initialize() {
 	
 	//自キャラ
 	std::vector<Model*> playerModels = {
-	    modelFighterBody_.get(), modelFighterHead_.get(), modelEnemyL_arm_.get(),
-	    modelEnemyR_arm_.get()};
+	    modelFighterBody_.get(), modelFighterHead_.get(), modelFighterL_arm_.get(),
+	    modelFighterR_arm_.get(), modelHammer_.get()};
 	// 自機
 	player_ = std::make_unique<Player>();
 	//自キャラの初期化
