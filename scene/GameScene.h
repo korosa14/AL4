@@ -16,7 +16,8 @@
 #include"Skydome.h"
 #include"DebugCamera.h"
 #include"FollowCamera.h"
-
+#include"CollisionManager.h"
+#include<list>
 #include<memory>
 
 /// <summary>
@@ -49,6 +50,9 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	// 衝突判定の応答
+	void CheckAllCollisions();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -83,7 +87,7 @@ private: // メンバ変数
 	// 自キャラ
 	std::unique_ptr<Player> player_;
 	//敵キャラ
-	std::unique_ptr<Enemy> enemy_;
+	std::list < std::unique_ptr < Enemy >> enemies_;
 	//地面
 	std::unique_ptr<Ground> ground_;
 	//天球
@@ -94,5 +98,7 @@ private: // メンバ変数
 	bool isDebugCameraActive_ = false;
 	//追従カメラ
 	std::unique_ptr<FollowCamera> followCamera_;
+	//衝突マネージャー
+	std::unique_ptr<CollisionManager> collisionManager_;
 
 };

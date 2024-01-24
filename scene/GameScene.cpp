@@ -74,11 +74,15 @@ void GameScene::Initialize() {
 	    modelEnemyBody_.get(), modelEnemyL_arm_.get(), modelEnemyR_arm_.get()
 	};
 	//敵の生産
-	enemy_ = std::make_unique<Enemy>();
+	std::unique_ptr<Enemy> enemy_ = std::make_unique<Enemy>();
 	//敵の初期化
 	enemy_->Initialize(enemyModels);
 	enemy_->SetLocalPosition(Vector3(10, 0, 20));
 	enemy_->SetLocalRotation(Vector3(0, PI, 0));
+	enemies_.push_back(std::move(enemy_));
+
+	//衝突マネージャーの生成
+	collisionManager_ = std::make_unique<CollisionManager>();
 }
 
 void GameScene::Update() { 
@@ -112,7 +116,11 @@ void GameScene::Update() {
 	//自キャラ
 	player_->Update();
 	//敵
-	enemy_->Update();
+	for (std::unique_ptr<Enemy>& enemy : enemies_) {
+		enemy->Update();
+	}
+	//衝突判定の応答
+	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -148,7 +156,10 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 	ground_->Draw(viewProjection_);
 	skydome_->Drow(viewProjection_);
-	enemy_->Draw(viewProjection_);
+	// 敵全てについて
+	for (const std::unique_ptr<Enemy>& enemy : enemies_) {
+		enemy->Draw(viewProjection_);
+	};
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -165,4 +176,17 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::CheckAllCollisions() {
+	//衝突マネージャーのリセット
+	collisionManager_->Reset();
+	//コライダーをリストに登録
+	collisionManager_->AddCollider(player_.get());
+	//敵全てについて
+	for (const std::unique_ptr<Enemy>& enemy : enemies_) {
+		collisionManager_->AddCollider(enemy.get());
+	}
+	//衝突判定と応答
+	collisionManager_->CheckAllCollisions();
 }

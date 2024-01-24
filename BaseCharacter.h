@@ -1,10 +1,11 @@
 ﻿#pragma once
 
+#include"Collider.h"
 #include "Model.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 
-class BaseCharacter {
+class BaseCharacter :public Collider{
 public:
 
 	//初期化
@@ -27,6 +28,9 @@ public:
 
 	 //親がない場合はワールド座標となる
 	 const Vector3& GetLocalPosition() const { return worldTransform_.translation_; };
+
+	 //中心座標を収得
+	 virtual Vector3 GetCenterPosition() const override;
 
 	 //ワールド変換データを取得
 	 //ワールド変換データ

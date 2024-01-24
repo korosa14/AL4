@@ -40,6 +40,12 @@ public:
 		viewProjection_ = viewProjection;
 	}
 
+	//中心座標を収得
+	Vector3 GetCenterPosition() const override;
+
+	//衝突を検出したら呼び出されるコールバック関数
+	void OnCollision() override;
+
 private:
 	//浮遊移動のサイクル<sec>
 	int32_t floationgCycle_ = 90;
